@@ -38,4 +38,9 @@ public class Enemy : MonoBehaviour
         //타겟의 방향보다 자신의 x가 크다면 왼쪽으로 가야하므로 flip(기존 이미지가 오른쪽을 보고 있음)
         spriter.flipX = target.position.x < rigid.position.x;
     }
+
+    void OnEnable()//스크립트가 다시 활성화될 때, 실행
+    {
+        target = GameManager.instance.player.GetComponent<Rigidbody2D>();
+    }
 }
