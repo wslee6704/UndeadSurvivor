@@ -25,6 +25,7 @@ public class Reposition : MonoBehaviour
 
         //방향을 아는 변수(Normalized가 없으면 이 작업 안해두 되긴함)
         Vector3 playerDir = GameManager.instance.player.inputVec;
+        //플레이어보다 왼
         float dirX = playerDir.x < 0 ? -1 : 1;
         float dirY = playerDir.y < 0 ? -1 : 1;
 
