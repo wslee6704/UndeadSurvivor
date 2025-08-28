@@ -27,7 +27,8 @@ public class Enemy : MonoBehaviour
     }
 
     void FixedUpdate()//항상 물리적인 움직임으로 FixedUpdate 사용함
-    {
+    {   
+        if (!GameManager.instance.isLive) return;
         //죽었거나 맞는 상태면 이동하지 않기
         if (!isLive || anim.GetCurrentAnimatorStateInfo(0).IsName("Hit")) return;
 
@@ -45,7 +46,8 @@ public class Enemy : MonoBehaviour
     }
 
     void LateUpdate()
-    {
+    {   
+        if (!GameManager.instance.isLive) return;
         //타겟의 방향보다 자신의 x가 크다면 왼쪽으로 가야하므로 flip(기존 이미지가 오른쪽을 보고 있음)
         if (isLive)
             spriter.flipX = target.position.x < rigid.position.x;

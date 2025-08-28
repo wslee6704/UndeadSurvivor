@@ -12,6 +12,8 @@ public class Item : MonoBehaviour
     //UI에 보여지기 위함. UnityEngine.UI 써줄것
     Image icon;
     Text textLevel;
+    Text textName;
+    Text textDesc;
 
     void Awake()
     {
@@ -21,11 +23,31 @@ public class Item : MonoBehaviour
 
         Text[] texts = GetComponentsInChildren<Text>();
         textLevel = texts[0];
+        textName = texts[1];
+        textDesc = texts[2];
+        textName.text = data.itemName;
+        
     }
 
-    void LateUpdate()
+    void OnEnable()
     {
         textLevel.text = "Lv." + (level + 1);
+        //Desc에 쓰이는 파라미터가, 2개, 1개, 0개 다양해서 switch로 분리
+        switch (data.itemType)
+        {
+            case ItemData.ItemType.Melee:
+            case ItemData.ItemType.Range:
+                textDesc.text = string.Format(data.itemDesc, data.damages[level] * 100, data.counts[level]);
+                break;
+            case ItemData.ItemType.Glove:
+            case ItemData.ItemType.Shoe:
+                textDesc.text = string.Format(data.itemDesc, data.damages[level]* 100);
+                break;
+            default:
+                textDesc.text = string.Format(data.itemDesc);
+                break;
+        }
+        
     }
 
     public void OnClick()

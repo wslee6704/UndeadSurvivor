@@ -10,6 +10,7 @@ public class Player : MonoBehaviour
     Animator anim;
 
     public Scanner scanner;
+    public Hand[] hands;
 
     void Awake()
     {
@@ -17,6 +18,7 @@ public class Player : MonoBehaviour
         spriter = GetComponent<SpriteRenderer>();
         anim = GetComponent<Animator>();
         scanner = GetComponent<Scanner>();
+        hands = GetComponentsInChildren<Hand>(true);
     }
 
     void Update()
@@ -32,13 +34,14 @@ public class Player : MonoBehaviour
 
     void FixedUpdate()
     {
-        
+        if (!GameManager.instance.isLive) return;
         Vector2 nextVetor = inputVec.normalized * speed * Time.fixedDeltaTime;
         rigid.MovePosition(rigid.position + nextVetor);
     }
 
     void LateUpdate()
     {
+        if (!GameManager.instance.isLive) return;
         anim.SetFloat("Speed", inputVec.magnitude);//벡터의 순수 길이값
         if (inputVec.x != 0)
         {

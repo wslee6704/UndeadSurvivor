@@ -20,6 +20,7 @@ public class Weapon : MonoBehaviour
 
     void Update()
     {
+        if (!GameManager.instance.isLive) return;
         switch (id)
         {
             case 0:
@@ -81,6 +82,14 @@ public class Weapon : MonoBehaviour
                 speed = 0.3f; //스피드는 연사속도임
                 break;
         }
+
+        //Hand set
+        //public enum ItemType { Melee, Range, Glove, Shoe, Heal }
+        //int로 강제 형변환해주면 자연스럽게 0,1로 바뀜
+        Hand hand = player.hands[(int)data.itemType];
+        hand.spriter.sprite = data.hand;
+        hand.gameObject.SetActive(true);
+
         player.BroadcastMessage("ApplyGear",SendMessageOptions.DontRequireReceiver);
     }
 

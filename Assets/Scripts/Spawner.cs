@@ -18,6 +18,7 @@ public class Spawner : MonoBehaviour
 
     void Update()
     {
+        if (!GameManager.instance.isLive) return;
         timer += Time.deltaTime;
         //소수점을 버리는 함수, 소수점을 올리는 함수는 CeilToInt이다
         level = Mathf.Min(Mathf.FloorToInt(GameManager.instance.gameTime / 10f),spawnData.Length-1);
