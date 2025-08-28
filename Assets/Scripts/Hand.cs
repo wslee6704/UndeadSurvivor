@@ -9,7 +9,7 @@ public class Hand : MonoBehaviour
 
     //오른손의 각 위치를 Vector3 형태로 저장
     Vector3 rightPos = new Vector3(0.35f, -0.15f, 0);
-    Vector3 rightReversePos = new Vector3(-0.15f, 0.15f, 0);
+    Vector3 rightReversePos = new Vector3(-0.15f, -0.15f, 0);
     //왼손의 각 회적을 Quaternion 형태로 저장
     Quaternion leftRot = Quaternion.Euler(0, 0, -35);
     Quaternion leftReverseRot = Quaternion.Euler(0, 0, -135);
