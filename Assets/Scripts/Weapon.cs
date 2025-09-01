@@ -75,11 +75,11 @@ public class Weapon : MonoBehaviour
         switch (id)
         {
             case 0:
-                speed = 150;//수치 양수에 Back하면 시계방향으로 돎
+                speed = 150 * Character.WeaponSpeed;//수치 양수에 Back하면 시계방향으로 돎
                 Disposition();
                 break;
             default:
-                speed = 0.3f; //스피드는 연사속도임
+                speed = 0.5f * Character.WeaponRate; //스피드는 연사속도임
                 break;
         }
 
