@@ -36,8 +36,10 @@ public class GameManager : MonoBehaviour
         health = maxHealth;
 
         player.gameObject.SetActive(true);
-        uiLevelUp.Select(playerId); 
+        uiLevelUp.Select(playerId);
         Resume();
+        
+        AudioManager.instance.PlaySfx(AudioManager.Sfx.Select);
     }
 
     public void GameRetry()
@@ -52,6 +54,7 @@ public class GameManager : MonoBehaviour
         yield return new WaitForSeconds(0.5f);
         uiResult.gameObject.SetActive(true);
         uiResult.Lose();
+        AudioManager.instance.PlaySfx(AudioManager.Sfx.Lose);
         Stop();
     }
 
@@ -67,6 +70,7 @@ public class GameManager : MonoBehaviour
         yield return new WaitForSeconds(0.5f);
         uiResult.gameObject.SetActive(true);
         uiResult.Win();
+        AudioManager.instance.PlaySfx(AudioManager.Sfx.Win);
         Stop();
     }
 
