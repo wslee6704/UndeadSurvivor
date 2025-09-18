@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -18,6 +19,8 @@ public class GameManager : MonoBehaviour
     public int kill;
     public int exp;
     public int[] nextExp = { 3, 5, 10, 100, 150, 210, 280, 360, 450, 600 };
+
+
     [Header("# Game Obeject")]
     public Player player;
     public PoolManager pool;
@@ -28,6 +31,7 @@ public class GameManager : MonoBehaviour
     void Awake()
     {
         instance = this;
+
     }
 
     public void GameStart(int id)
@@ -36,9 +40,9 @@ public class GameManager : MonoBehaviour
         health = maxHealth;
 
         player.gameObject.SetActive(true);
-        uiLevelUp.Select(playerId);
+        uiLevelUp.Select(playerId%2);
         Resume();
-        
+        AudioManager.instance.PlayBgm(true);
         AudioManager.instance.PlaySfx(AudioManager.Sfx.Select);
     }
 
@@ -54,6 +58,8 @@ public class GameManager : MonoBehaviour
         yield return new WaitForSeconds(0.5f);
         uiResult.gameObject.SetActive(true);
         uiResult.Lose();
+
+        AudioManager.instance.PlayBgm(false);
         AudioManager.instance.PlaySfx(AudioManager.Sfx.Lose);
         Stop();
     }
@@ -70,6 +76,8 @@ public class GameManager : MonoBehaviour
         yield return new WaitForSeconds(0.5f);
         uiResult.gameObject.SetActive(true);
         uiResult.Win();
+
+        AudioManager.instance.PlayBgm(false);
         AudioManager.instance.PlaySfx(AudioManager.Sfx.Win);
         Stop();
     }

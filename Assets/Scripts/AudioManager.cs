@@ -12,6 +12,7 @@ public class AudioManager : MonoBehaviour
     public AudioClip bgmClip;
     public float bgmVolume;
     AudioSource bgmPlayer;
+    AudioHighPassFilter bgmEffect;
 
     [Header("#SFX")]//효과음
     public AudioClip[] sfxClips;
@@ -36,6 +37,9 @@ public class AudioManager : MonoBehaviour
         bgmPlayer.playOnAwake = false;//시작할때 들리지 않게
         bgmPlayer.volume = bgmVolume;
         bgmPlayer.clip = bgmClip;
+
+        bgmEffect = Camera.main.GetComponent<AudioHighPassFilter>();
+
         //효과음 플레이어 초기화
         GameObject sfxObject = new GameObject("SfxPlayer");
         sfxObject.transform.parent = transform;
@@ -46,9 +50,22 @@ public class AudioManager : MonoBehaviour
             sfxPlayers[index] = sfxObject.AddComponent<AudioSource>();
             sfxPlayers[index].playOnAwake = false;
             sfxPlayers[index].volume = sfxVolume;
+            sfxPlayers[index].bypassListenerEffects = true;
         }
 
 
+    }
+
+    public void PlayBgm(bool isPlay)
+    {
+        if (isPlay)
+        {
+            bgmPlayer.Play();
+        }
+        else
+        {
+            bgmPlayer.Stop();
+        }
     }
 
     public void PlaySfx(Sfx sfx)
@@ -62,10 +79,20 @@ public class AudioManager : MonoBehaviour
             {//효과음 실행중일 때
                 continue;
             }
+
+            int ranIndex = 0;
+            if (sfx == Sfx.Hit || sfx == Sfx.Melee)
+            {//사운드가 두개 이상 있는것들
+                ranIndex = Random.Range(0, 2);
+            }
             channelIndex = loopIndex;
-            sfxPlayers[loopIndex].clip = sfxClips[(int)sfx];
+            sfxPlayers[loopIndex].clip = sfxClips[(int)sfx + ranIndex];
             sfxPlayers[loopIndex].Play();
             break;
         }
+    }
+    public void EffectBgm(bool isPlay)
+    {
+        bgmEffect.enabled = isPlay;
     }
 }

@@ -16,9 +16,12 @@ public class ItemData : ScriptableObject
     [Header("# Level Data")]
     public float baseDamage;//0레벨의 기준
     public int baseCount;
+    public float baseSpeed;
+    public float baseBulletSpeed;//무기 자체 날아가는 속도
 
     public float[] damages;
     public int[] counts;
+    public float[] bulletSpeeds;
 
     [Header("# Weapon")]
     public GameObject projectile;//투사체

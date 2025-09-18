@@ -90,6 +90,7 @@ public class Enemy : MonoBehaviour
         {
             //살아 있는 경우(피격 애니메이션 그리기)
             anim.SetTrigger("Hit");
+            AudioManager.instance.PlaySfx(AudioManager.Sfx.Hit);
         }
         else
         {
@@ -101,6 +102,8 @@ public class Enemy : MonoBehaviour
             anim.SetBool("Dead", true);
             GameManager.instance.kill++;
             GameManager.instance.GetExp();
+            if(GameManager.instance.isLive)//게임을 성공했을 때 전부 죽기 때문에, 이때는 소리를 꺼준다
+                AudioManager.instance.PlaySfx(AudioManager.Sfx.Dead);
             // ..죽는 경우
         }
     }

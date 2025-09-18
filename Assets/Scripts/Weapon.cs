@@ -8,6 +8,7 @@ public class Weapon : MonoBehaviour
     public float damage;
     public int count;
     public float speed;//회전속도
+    ItemData itemData;//무기의 타입으로 변경하기 위해
 
 
     float timer;
@@ -36,8 +37,6 @@ public class Weapon : MonoBehaviour
                 }
                 break;
         }
-        // ..Test Code..
-        if (Input.GetButtonDown("Jump")) LevelUp(damage + 1, 1);
     }
 
     public void LevelUp(float damage, int count)
@@ -45,9 +44,10 @@ public class Weapon : MonoBehaviour
         this.damage = damage;
         this.count += count;
 
-        if (id == 0) Disposition();//무기 타입이 근접이면 재배치
+        if (itemData.itemType == ItemData.ItemType.Melee) Disposition();//무기 타입이 근접이면 재배치
 
-        player.BroadcastMessage("ApplyGear",SendMessageOptions.DontRequireReceiver);
+        //레벨업시, 수치가적용되기 위해서
+        player.BroadcastMessage("ApplyGear", SendMessageOptions.DontRequireReceiver);
     }
 
     public void Init(ItemData data)//이때 무기의 id에 따라 초기화가 달라져야함
@@ -58,6 +58,8 @@ public class Weapon : MonoBehaviour
         transform.localPosition = Vector3.zero; //플레이어의 자식이니 로컬 위치의 제로로
 
         //Property Set
+        // = data;
+        //좀 바보같다 이미 data를 받아와서
         id = data.itemId;
         damage = data.baseDamage;
         count = data.baseCount;
@@ -75,11 +77,13 @@ public class Weapon : MonoBehaviour
         switch (id)
         {
             case 0:
-                speed = 150 * Character.WeaponSpeed;//수치 양수에 Back하면 시계방향으로 돎
+                //15
+                speed = data.baseSpeed * Character.WeaponSpeed;//수치 양수에 Back하면 시계방향으로 돎
                 Disposition();
                 break;
             default:
-                speed = 0.5f * Character.WeaponRate; //스피드는 연사속도임
+                //0.5f
+                speed = data.baseSpeed * Character.WeaponRate; //스피드는 연사속도임
                 break;
         }
 
@@ -90,7 +94,7 @@ public class Weapon : MonoBehaviour
         hand.spriter.sprite = data.hand;
         hand.gameObject.SetActive(true);
 
-        player.BroadcastMessage("ApplyGear",SendMessageOptions.DontRequireReceiver);
+        player.BroadcastMessage("ApplyGear", SendMessageOptions.DontRequireReceiver);
     }
 
     void Disposition()
@@ -114,12 +118,11 @@ public class Weapon : MonoBehaviour
             bullet.localRotation = Quaternion.identity;
 
             Vector3 rotVec = Vector3.forward * 360 * index / count;
-            Debug.Log(bullet.position.x + " " + bullet.position.y);
             bullet.Rotate(rotVec);
             //거리만큼 위에 배치
             bullet.Translate(bullet.up * 1.5f, Space.World);
             //근접 무기는 무조건 관통이기에 -1은 Infinity per이라는 주석을 달아준다.
-            bullet.GetComponent<Bullet>().Init(damage, -1, Vector3.zero);
+            bullet.GetComponent<Bullet>().Init(damage, -100, Vector3.zero, 0);
         }
 
     }
@@ -139,6 +142,8 @@ public class Weapon : MonoBehaviour
 
         //지정된 축을 중심으로 목표를 향해 회전하는 함수
         bullet.rotation = Quaternion.FromToRotation(Vector3.up, dir);
-        bullet.GetComponent<Bullet>().Init(damage, count, dir);
+        bullet.GetComponent<Bullet>().Init(damage, count, dir, itemData.baseBulletSpeed);
+
+        AudioManager.instance.PlaySfx(AudioManager.Sfx.Range);
     }
 }
