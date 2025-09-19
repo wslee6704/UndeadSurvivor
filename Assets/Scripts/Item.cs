@@ -8,9 +8,6 @@ public class Item : MonoBehaviour
     ItemData data;
     int level;
     int index;
-    //플레이어가 갖고 있는 Weapon과 연동되어야있어야 하므로
-    public Weapon weapon;
-    public Gear gear;
 
     //UI에 보여지기 위함. UnityEngine.UI 써줄것
     Image icon;

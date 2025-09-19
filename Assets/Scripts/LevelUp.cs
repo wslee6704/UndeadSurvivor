@@ -12,7 +12,7 @@ public class LevelUp : MonoBehaviour
     Item[] items;
 
     //플레이어가 갖고 있는 Weapon과 연동되어야있어야 하므로
-    public List<Weapon> weapons= new List<Weapon>();
+    public List<Weapon> weapons = new List<Weapon>();
     public Gear gear;
 
     [Tooltip("무기 관련 데이터")]
@@ -44,9 +44,43 @@ public class LevelUp : MonoBehaviour
     }
 
     public void Select(int index)
-    {   
+    {
         //게임 매니저에서 처음 쓰는 레벨업 방식인데 임시방편
         LevelIncr(index);
+    }
+
+    Weapon CreateWeapon(ItemData.ItemType type, ItemData data)
+    {
+        GameObject newWeapon = new GameObject();
+        Weapon weapon = null;
+
+        switch (type)
+        {
+            case ItemData.ItemType.Melee:
+                weapon = newWeapon.AddComponent<MeleeWeapon>();
+                break;
+            case ItemData.ItemType.Range:
+                weapon = newWeapon.AddComponent<RangeWeapon>();
+                break;
+        }
+        weapon.Init(data);
+        return weapon;
+    }
+
+    void UpgradeWeapon(ItemData data, int level)
+    {
+        float nextDamage = data.baseDamage;
+        int nextCount = 0;
+
+        nextDamage += data.baseDamage * data.damages[level];
+        nextCount += data.counts[level];
+        for (int i = 0; i < weapons.Count; i++)
+        {
+            if (data.itemId == weapons[i].id)//weapon을 담고 있는 배열에서 무기 id가 같은것을 레벨업
+            {
+                weapons[i].LevelUp(nextDamage, nextCount);
+            }
+        }
     }
 
     public void LevelIncr(int index)
@@ -60,25 +94,11 @@ public class LevelUp : MonoBehaviour
             case ItemData.ItemType.Range:
                 if (level == 0)//Weapon 배열에 새로 추가함
                 {
-                    GameObject newWeapon = new GameObject();
-                    weapons.Add(newWeapon.AddComponent<Weapon>()); 
-                    weapons[weapons.Count - 1].Init(data);//웨폰의 항상 마지막 부분이 생성될테니,
+                    weapons.Add(CreateWeapon(data.itemType, data));
                 }
                 else
                 {
-                    float nextDamage = data.baseDamage;
-                    int nextCount = 0;
-
-                    nextDamage += data.baseDamage * data.damages[level];
-                    nextCount += data.counts[level];
-                    for(int i = 0; i < weapons.Count; i++)
-                    {
-                        if(data.itemId == weapons[i].id)//weapon을 담고 있는 배열에서 무기 id가 같은것을 레벨업
-                        {
-                            weapons[i].LevelUp(nextDamage, nextCount);
-                        }
-                    }
-                    
+                    UpgradeWeapon(data, level);
                 }
                 itemLevels[index]++;
                 break;
@@ -136,12 +156,12 @@ public class LevelUp : MonoBehaviour
             if (IsItemMaxLevel(ranIndex))
             {
                 //소비아이템이 여러개면 여기에 RandomRange 넣고 대체해주기
-                items[index].ChangeData(itemDatas[4],4,itemLevels[4]);
+                items[index].ChangeData(itemDatas[4], 4, itemLevels[4]);
                 items[index].gameObject.SetActive(true);
             }
             else
             {
-                items[index].ChangeData(itemDatas[ranIndex],ranIndex,itemLevels[ranIndex]);
+                items[index].ChangeData(itemDatas[ranIndex], ranIndex, itemLevels[ranIndex]);
                 items[index].gameObject.SetActive(true);
             }
 
