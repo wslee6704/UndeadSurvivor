@@ -8,6 +8,7 @@ TagManager:
   - Area
   - Enemy
   - Bullet
+  - PickUpItem
   layers:
   - Default
   - TransparentFX

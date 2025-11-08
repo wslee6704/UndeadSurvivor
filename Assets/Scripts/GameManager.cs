@@ -1,13 +1,16 @@
+using System;
 using System.Collections;
+
 using UnityEngine;
 using UnityEngine.SceneManagement;
+
 
 public class GameManager : MonoBehaviour
 {
     public static GameManager instance;
     [Header("# Game Control")]
     public float gameTime;
-    public float maxGameTime = 2 * 10f;
+    public float maxGameTime;//인스펙터 초기화
     public bool isLive;//12에서 추가
 
     [Header("# Player Info")]
@@ -17,28 +20,45 @@ public class GameManager : MonoBehaviour
     public int level;
     public int kill;
     public int exp;
-    public int[] nextExp = { 3, 5, 10, 100, 150, 210, 280, 360, 450, 600 };
+    public int[] nextExp = { 3, 5, 10, 50, 100, 150, 280, 360, 450, 600 };
+
+
     [Header("# Game Obeject")]
     public Player player;
     public PoolManager pool;
     public LevelUp uiLevelUp;
     public Result uiResult;//결과창을 보여줄 ui와 데이터들
     public GameObject enemyCleaner;
+    public Notice notice;
 
     void Awake()
     {
         instance = this;
     }
+    
+    void Start()
+    {
+        playerId = PlayerPrefs.GetInt("playerId", 0);
+        player.SetInit();
+    }
 
     public void GameStart(int id)
     {
-        playerId = id;
+        //player.gameObject.SetActive(false);
+        if (id != -1)
+        {
+            playerId = id;
+            PlayerPrefs.SetInt("playerId", id);
+        }
+        
+        
         health = maxHealth;
 
-        player.gameObject.SetActive(true);
-        uiLevelUp.Select(playerId);
+        //player.gameObject.SetActive(true);
+        player.SetInit();
+        uiLevelUp.Select(playerId % 2);
         Resume();
-        
+        AudioManager.instance.PlayBgm(true);
         AudioManager.instance.PlaySfx(AudioManager.Sfx.Select);
     }
 
@@ -50,10 +70,12 @@ public class GameManager : MonoBehaviour
     IEnumerator GameOverRoutine()
     {
         isLive = false;
-        
+
         yield return new WaitForSeconds(0.5f);
         uiResult.gameObject.SetActive(true);
         uiResult.Lose();
+
+        AudioManager.instance.PlayBgm(false);
         AudioManager.instance.PlaySfx(AudioManager.Sfx.Lose);
         Stop();
     }
@@ -70,6 +92,8 @@ public class GameManager : MonoBehaviour
         yield return new WaitForSeconds(0.5f);
         uiResult.gameObject.SetActive(true);
         uiResult.Win();
+
+        AudioManager.instance.PlayBgm(false);
         AudioManager.instance.PlaySfx(AudioManager.Sfx.Win);
         Stop();
     }
@@ -92,11 +116,11 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void GetExp()
+    public void GetExp(int point)
     {
         if (!isLive) return;
-        exp++;
-        if (exp == nextExp[Mathf.Min(level,nextExp.Length - 1)])//실제 레벨이 커진다면 고정
+        exp+=point;
+        if (exp >= nextExp[Mathf.Min(level, nextExp.Length - 1)])//실제 레벨이 커진다면 고정
         {
             level++;
             exp = 0;
@@ -115,5 +139,9 @@ public class GameManager : MonoBehaviour
         isLive = true;
         Time.timeScale = 1;
     }
+
+
+
 }
+
 

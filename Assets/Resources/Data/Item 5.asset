@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 98d90ddfd8f56584ba155c9d7de51d59, type: 3}
+  m_Name: Item 5
+  m_EditorClassIdentifier: 
+  itemType: 1
+  itemId: 5
+  itemName: "\uB0AB \uBD80\uBA54\uB791"
+  itemDesc: "\uB370\uBBF8\uC9C0 {0}% \uC99D\uAC00\n\uBD80\uBA54\uB791 \uC18D\uB3C4
+    {1}% \uC99D\uAC00"
+  itemIcon: {fileID: -344242777, guid: d71a3dc7aa20fad4f9a99fc76a9254ba, type: 3}
+  baseDamage: 5
+  baseCount: 0
+  baseSpeed: 2
+  baseBulletSpeed: 10
+  damages:
+  - 0.35
+  - 0.7
+  - 1
+  - 1.4
+  - 2
+  counts: 
+  bulletSpeeds:
+  - 0.2
+  - 0.2
+  - 0.2
+  - 0.2
+  - 0.2
+  projectile: {fileID: 3134167556232110052, guid: 650362d4440d36a46ad4f82e4d054cbd, type: 3}
+  hand: {fileID: 0}
