@@ -9,7 +9,7 @@ public class Weapon : MonoBehaviour
     public int count;
     public float speed;//회전속도
     protected ItemData itemData;//무기의 타입으로 변경하기 위해
-
+    public float bulletSpeed;//총알 속도
 
     protected float timer;
     protected Player player;
@@ -19,18 +19,27 @@ public class Weapon : MonoBehaviour
         player = GameManager.instance.player;
     }
 
-
-    public virtual void LevelUp(float damage, int count)
+    //LeverLincr에서 따로 사용
+    public void LevelUp(float damage, int count, float bulletSpeed)
     {
         this.damage = damage;
         this.count += count;
-
-        //Disposition
-        //레벨업시, 수치가적용되기 위해서
-        
+        this.bulletSpeed = bulletSpeed;
+        LevelUpForInherit();
+        player.BroadcastMessage("ApplyGear", SendMessageOptions.DontRequireReceiver);
     }
 
-    public virtual void Init(ItemData data)//이때 무기의 id에 따라 초기화가 달라져야함
+    protected virtual void LevelUpForInherit(){}
+
+    //근거리, 원거리에서 초기화해야할 부분을 초기화해준다.
+    //부모함수에서 항상 마지막에 실행해야할 부분이 있어서 중간에 실행할 수 있게 하였다.
+    protected virtual void InitForInherit(ItemData data)
+    {
+        Debug.Log("무기 초기화");
+    }
+
+    
+    public void Init(ItemData data)//이때 무기의 id에 따라 초기화가 달라져야함
     {
         //Basic Set
         name = "Weapon " + data.itemId;
@@ -43,6 +52,7 @@ public class Weapon : MonoBehaviour
         id = data.itemId;
         damage = data.baseDamage;
         count = data.baseCount;
+        this.bulletSpeed = data.baseBulletSpeed;
 
         for (int index = 0; index < GameManager.instance.pool.prefabs.Length; index++)
         {
@@ -54,21 +64,22 @@ public class Weapon : MonoBehaviour
             }
         }
 
-
+        //근거리, 원거리 초기화해주는 부분.
+        InitForInherit(data);
 
         //Hand set
         //public enum ItemType { Melee, Range, Glove, Shoe, Heal }
         //int로 강제 형변환해주면 자연스럽게 0,1로 바뀜
         Hand hand = player.hands[(int)data.itemType];
-        hand.spriter.sprite = data.hand;
-        hand.gameObject.SetActive(true);
+        if(data.hand != null)
+        {
+            hand.spriter.sprite = data.hand;
+            hand.gameObject.SetActive(true);
+        }
+        
 
-        //원래 applyGear 하는 자리.
-    }
-
-    
-
-    
+        player.BroadcastMessage("ApplyGear", SendMessageOptions.DontRequireReceiver);
+    }   
 }
 
 

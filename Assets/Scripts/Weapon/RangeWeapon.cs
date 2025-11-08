@@ -14,18 +14,15 @@ public class RangeWeapon : Weapon
         }
     }
 
-    public override void LevelUp(float damage, int count)
+
+
+    protected override void InitForInherit(ItemData data)
     {
-        base.LevelUp(damage, count);
-        player.BroadcastMessage("ApplyGear", SendMessageOptions.DontRequireReceiver);
+        bulletSpeed = itemData.baseBulletSpeed;
+        speed = data.baseSpeed * Character.WeaponRate; //스피드는 연사속도임
     }
 
-    public override void Init(ItemData data)
-    {
-        base.Init(data);
-        speed = data.baseSpeed * Character.WeaponRate; //스피드는 연사속도임
-        player.BroadcastMessage("ApplyGear", SendMessageOptions.DontRequireReceiver);
-    }
+
 
     void Fire()
     {
@@ -42,7 +39,7 @@ public class RangeWeapon : Weapon
 
         //지정된 축을 중심으로 목표를 향해 회전하는 함수
         bullet.rotation = Quaternion.FromToRotation(Vector3.up, dir);
-        bullet.GetComponent<Bullet>().Init(damage, count, dir, itemData.baseBulletSpeed);
+        bullet.GetComponent<Bullet>().Init(damage, count, dir,bulletSpeed );
 
         AudioManager.instance.PlaySfx(AudioManager.Sfx.Range);
     }

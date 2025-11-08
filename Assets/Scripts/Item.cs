@@ -38,7 +38,6 @@ public class Item : MonoBehaviour
         this.data = data;
         this.index = index;
         this.level = level;
-        Debug.Log(data.itemName +" 아이템 level" + level.ToString());
     }
     void OnEnable()
     {
@@ -46,20 +45,8 @@ public class Item : MonoBehaviour
         textName.text = data.itemName;
         textLevel.text = "Lv." + (level + 1);
         //Desc에 쓰이는 파라미터가, 2개, 1개, 0개 다양해서 switch로 분리
-        switch (data.itemType)
-        {
-            case ItemData.ItemType.Melee:
-            case ItemData.ItemType.Range:
-                textDesc.text = string.Format(data.itemDesc, data.damages[level] * 100, data.counts[level]);
-                break;
-            case ItemData.ItemType.Glove:
-            case ItemData.ItemType.Shoe:
-                textDesc.text = string.Format(data.itemDesc, data.damages[level] * 100);
-                break;
-            default:
-                textDesc.text = string.Format(data.itemDesc);
-                break;
-        }
+        textDesc.text = data.GetDescription(level);
+
 
     }
 
@@ -68,55 +55,5 @@ public class Item : MonoBehaviour
         levelUp.LevelIncr(index);
     }
 
-    //레벨을 LevelUp에서 전체 저장하고 있는 데이터로 넘기기
-    // public void OnClick()
-    // {
-    //     switch (data.itemType)
-    //     {
-    //         case ItemData.ItemType.Melee:
-    //         case ItemData.ItemType.Range:
-    //             if (level == 0)
-    //             {
-    //                 GameObject newWeapon = new GameObject();
-    //                 weapon = newWeapon.AddComponent<Weapon>();
-    //                 weapon.Init(data);
-    //             }
-    //             else
-    //             {
-    //                 float nextDamage = data.baseDamage;
-    //                 int nextCount = 0;
 
-    //                 nextDamage += data.baseDamage * data.damages[level];
-    //                 nextCount += data.counts[level];
-
-    //                 weapon.LevelUp(nextDamage, nextCount);
-    //             }
-    //             level++;
-    //             break;
-    //         case ItemData.ItemType.Glove:
-    //         case ItemData.ItemType.Shoe:
-    //             if (level == 0)
-    //             {
-    //                 GameObject newGear = new GameObject();
-    //                 gear = newGear.AddComponent<Gear>();
-    //                 gear.Init(data);
-    //             }
-    //             else
-    //             {
-    //                 float nextRate = data.damages[level];
-    //                 gear.LevelUp(nextRate);
-    //             }
-    //             level++;
-    //             break;
-    //         case ItemData.ItemType.Heal:
-    //             GameManager.instance.health = GameManager.instance.maxHealth;
-    //             break;
-    //     }
-
-    //     //최대레벨일 때 클릭되지 않게
-    //     if (level == data.damages.Length)
-    //     {
-    //         GetComponent<Button>().interactable = false;
-    //     }
-    // }
 }

@@ -46,4 +46,38 @@ public class PoolManager : MonoBehaviour
 
         return select;
     }
+
+    public GameObject Get(string prefabName)
+    {
+        int index = System.Array.FindIndex(prefabs, p => p.name == prefabName);
+        if (index == -1)
+        {
+            Debug.LogWarning($"[PoolManager] '{prefabName}' 프리팹을 찾을 수 없습니다.");
+            return null;
+        }
+
+        return Get(index); // 기존 int 버전 호출
+    }
+
+    public void CallOnActive<T>(System.Action<T> action) where T : Component
+    {
+        for (int i = 0; i < prefabs.Length; i++)
+        {
+            // 해당 프리팹이 T 컴포넌트를 가지고 있을 때만 처리
+            if (prefabs[i].GetComponent<T>() != null)
+            {
+                foreach (GameObject obj in pools[i])
+                {
+                    if (obj.activeSelf)
+                    {
+                        T component = obj.GetComponent<T>();
+                        if (component != null)
+                        {
+                            action(component);
+                        }
+                    }
+                }
+            }
+        }
+    }
 }

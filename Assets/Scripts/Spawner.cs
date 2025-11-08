@@ -19,7 +19,7 @@ public class Spawner : MonoBehaviour
 
     public float levelTime;
 
-    int level;
+    int level = 0;
     float timer;
 
     void Awake()
@@ -33,8 +33,18 @@ public class Spawner : MonoBehaviour
         if (!GameManager.instance.isLive) return;
         timer += Time.deltaTime;
         //소수점을 버리는 함수, 소수점을 올리는 함수는 CeilToInt이다
-        level = Mathf.Min(Mathf.FloorToInt(GameManager.instance.gameTime / 10f), spawnData.Length - 1);
 
+        //현재 레벨이 계산했을 때의 레벨 보다 낮으면 Up
+        if (level >= Mathf.Min(Mathf.FloorToInt(GameManager.instance.gameTime / 5f), spawnData.Length - 1))
+        {
+
+        }
+        else
+        {
+            level++;
+            Spawn();
+        }
+        
         if (timer > spawnData[level].spawnTime)
         {
             timer = 0;
@@ -47,7 +57,15 @@ public class Spawner : MonoBehaviour
         //GetComponentsInChildren은 자기 자신까지 포함하기 때문에 범위를 1로함
         enemy.transform.position = spawnPoint[Random.Range(1, spawnPoint.Length)].transform.position;
         enemy.GetComponent<Enemy>().Init(spawnData[level]);
+        if (spawnData[level].spawnTime >= 30f)
+        {
+            enemy.AddComponent<Boss>();
+        }
     }
+    void MakingBoss(GameObject enemy)
+    {
+    }
+    
 }
 
 [System.Serializable]

@@ -16,17 +16,18 @@ public class LevelUp : MonoBehaviour
     public Gear gear;
 
     [Tooltip("무기 관련 데이터")]
-    public ItemData[] itemDatas;//인스펙터에서 초기화
+    [SerializeField]private ItemData[] itemDatas;//인스펙터에서 초기화
     public int[] itemLevels;//Awake에서 초기화
 
     void Awake()
     {
+        itemDatas = Resources.LoadAll<ItemData>("Data");
         itemLevels = new int[itemDatas.Length];
         rect = GetComponent<RectTransform>();
         items = GetComponentsInChildren<Item>(true);//비활성화도 있으므로
     }
 
-    public void Show()
+    public void Show()//이게 실질적 레벨업 창 띄우기
     {
         Next();
         rect.localScale = Vector3.one;
@@ -46,42 +47,11 @@ public class LevelUp : MonoBehaviour
     public void Select(int index)
     {
         //게임 매니저에서 처음 쓰는 레벨업 방식인데 임시방편
-        LevelIncr(index);
+        LevelIncr(7);
+        LevelIncr(6);
+        LevelIncr(5);
     }
 
-    Weapon CreateWeapon(ItemData.ItemType type, ItemData data)
-    {
-        GameObject newWeapon = new GameObject();
-        Weapon weapon = null;
-
-        switch (type)
-        {
-            case ItemData.ItemType.Melee:
-                weapon = newWeapon.AddComponent<MeleeWeapon>();
-                break;
-            case ItemData.ItemType.Range:
-                weapon = newWeapon.AddComponent<RangeWeapon>();
-                break;
-        }
-        weapon.Init(data);
-        return weapon;
-    }
-
-    void UpgradeWeapon(ItemData data, int level)
-    {
-        float nextDamage = data.baseDamage;
-        int nextCount = 0;
-
-        nextDamage += data.baseDamage * data.damages[level];
-        nextCount += data.counts[level];
-        for (int i = 0; i < weapons.Count; i++)
-        {
-            if (data.itemId == weapons[i].id)//weapon을 담고 있는 배열에서 무기 id가 같은것을 레벨업
-            {
-                weapons[i].LevelUp(nextDamage, nextCount);
-            }
-        }
-    }
 
     public void LevelIncr(int index)
     {
@@ -125,6 +95,7 @@ public class LevelUp : MonoBehaviour
         }
     }
 
+    //레벨업 됐을때, 어떤 아이템들 보여줄지 창에 띄움
     void Next()
     {
         //1. 모든 아이템 비활성화
@@ -173,4 +144,90 @@ public class LevelUp : MonoBehaviour
     {
         return itemLevels[index] == itemDatas[index].damages.Length;
     }
+
+    /*-----------무기 업그레이드, 종류별로 업그레이드 할예정이라 코드 길어져서 나눔.*/
+
+    Weapon CreateWeapon(ItemData.ItemType type, ItemData data)
+    {
+
+        Weapon weapon = null;
+
+        switch (type)
+        {
+            case ItemData.ItemType.Melee:
+                weapon = CreateMelee(data);
+                break;
+            case ItemData.ItemType.Range:
+                weapon = new GameObject().AddComponent<RangeWeapon>();
+                break;
+        }
+        weapon.Init(data);
+        return weapon;
+    }
+
+    Weapon CreateMelee(ItemData data)
+    {
+        GameObject newWeapon = new GameObject();
+        switch (data.itemId)
+        {
+            case 0://삽
+                return newWeapon.AddComponent<Shovel>();
+            case 6://칼
+                return newWeapon.AddComponent<Sword>();
+            case 7://창.
+                return newWeapon.AddComponent<Spear>();
+            default:
+                return null;
+        }
+    }
+
+    // Weapon CreateRange(ItemData data)
+    // {
+    //     GameObject newWeapon = new GameObject();
+    //     switch (data.itemId)
+    //     {
+    //         case 1://총
+    //             return newWeapon.AddComponent<Shovel>();
+    //         case 5://낫 부메랑
+    //             return newWeapon.AddComponent<RangeWeapon>();
+    //         default:
+    //             return null;
+    //     }
+    // }
+
+    void UpgradeWeapon(ItemData data, int level)
+    {
+        float nextDamage = data.baseDamage;
+        int nextCount = 0;
+        float nextBulletSpeed = data.baseBulletSpeed;
+
+        // damage 적용
+        if (data.damages != null && level < data.damages.Length)
+        {
+            nextDamage += data.baseDamage * data.damages[level];
+        }
+
+        // count 적용
+        if (data.counts != null && level < data.counts.Length)
+        {
+            nextCount += data.counts[level];
+        }
+
+        // bulletSpeed 적용
+        if (data.bulletSpeeds != null && level < data.bulletSpeeds.Length)
+        {
+            nextBulletSpeed += data.baseBulletSpeed * data.bulletSpeeds[level];
+        }
+
+        // 무기 리스트에서 찾아서 레벨업 적용
+        for (int i = 0; i < weapons.Count; i++)
+        {
+            if (data.itemId == weapons[i].id)
+            {
+                weapons[i].LevelUp(nextDamage, nextCount, nextBulletSpeed);
+            }
+        }
+    }
+
+
 }
