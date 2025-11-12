@@ -111,7 +111,7 @@ public class Sword : MeleeWeapon
         Vector3 mouseWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         //마우스 포지션이 0,0이기 때문에 플레이어 벡터를 빼준다
 
-        Vector2 inputVec = (mouseWorldPos-GameManager.instance.player.transform.position).normalized; // (1,0) 같은 벡터
+        Vector2 inputVec = (mouseWorldPos - GameManager.instance.player.transform.position).normalized; // (1,0) 같은 벡터
         Debug.Log(inputVec.ToString());
         float angle = Mathf.Atan2(inputVec.y, inputVec.x) * Mathf.Rad2Deg; // 라디안을 도로로 변환
         bullet.transform.rotation = Quaternion.Euler(0, 0, angle + 90);
@@ -148,8 +148,10 @@ public class Spear : MeleeWeapon
         }
         //게이지 ui 초기화
         GameObject imageObj = GameObject.Find("Canvas/HUD/Guage/GuageSlider");
+        GameObject guageObj = GameObject.Find("Canvas/HUD/Guage");
         if (imageObj != null)
         {
+            guageObj.SetActive(true);
             imageObj.SetActive(true);
             itemGauage = imageObj.GetComponent<Image>();
             itemGauage.fillAmount = 1;
@@ -159,7 +161,7 @@ public class Spear : MeleeWeapon
 
     void FixedUpdate()
     {
-        
+
     }
 
     void Update()
@@ -171,7 +173,7 @@ public class Spear : MeleeWeapon
 
             curTime += Time.deltaTime;
             guageFill = curTime / (float)itemData.baseSpeed;
-            Debug.Log(guageFill);
+            //Debug.Log(guageFill);
             itemGauage.fillAmount = guageFill >= 1 ? 1 : guageFill;
         }
         else//무기가 켜져있는동안은, use
@@ -218,5 +220,33 @@ public class Spear : MeleeWeapon
             yield return null;
         }
         bullet.SetActive(false);
+    }
+}
+
+public class Bonfire : MeleeWeapon
+{
+
+    void Update()
+    {
+        if (!GameManager.instance.isLive) return;
+        timer += Time.deltaTime;
+
+        if (timer > speed)
+        {
+            timer = 0f;
+            Disposition();
+        }
+    }
+    protected override void InitForInherit(ItemData data)
+    {
+        bulletSpeed = itemData.baseBulletSpeed;
+        speed = data.baseSpeed * Character.WeaponRate; //스피드는 연사속도임
+    }
+
+    void Disposition()
+    {
+        Transform bullet = GameManager.instance.pool.Get(prefabId).transform;
+        bullet.position = transform.position;
+        bullet.GetComponent<Bullet>().Init(damage, count, Vector3.zero, bulletSpeed);
     }
 }

@@ -57,23 +57,39 @@ public class Spawner : MonoBehaviour
         //GetComponentsInChildren은 자기 자신까지 포함하기 때문에 범위를 1로함
         enemy.transform.position = spawnPoint[Random.Range(1, spawnPoint.Length)].transform.position;
         enemy.GetComponent<Enemy>().Init(spawnData[level]);
-        if (spawnData[level].spawnTime >= 30f)
+        //패턴이 활성화가 되있다면
+        if (spawnData[level].bossPattern != BossPatternType.None)
         {
-            enemy.AddComponent<Boss>();
+            Boss boss = enemy.AddComponent<Boss>();
+            //플래그를 넣어서 보스 패턴 초기화
+            //다만 Start에서 패턴 배열을 초기화해주기 때문에 이게 효율적인지는 좀이따 체크
+            boss.PatternInit((int)spawnData[level].bossPattern);
         }
     }
-    void MakingBoss(GameObject enemy)
-    {
-    }
+
     
+}
+
+[System.Flags]
+public enum BossPatternType
+{
+    None = 0,
+    PatternOfShot1 = 1 << 0,
+    PatternOfShot2 = 1 << 1,
+    PatternOfDash1 = 1 << 2
 }
 
 [System.Serializable]
 public class SpawnData
 {
     public float spawnTime;
-
     public int spriteType;
     public int health;
     public float speed;
+
+    public bool isBoss;
+
+    //[EnumFlags] // 커스텀 속성 (아래 코드에 정의)
+    public BossPatternType bossPattern;
 }
+

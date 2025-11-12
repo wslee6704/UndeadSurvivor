@@ -47,9 +47,7 @@ public class LevelUp : MonoBehaviour
     public void Select(int index)
     {
         //게임 매니저에서 처음 쓰는 레벨업 방식인데 임시방편
-        LevelIncr(7);
-        LevelIncr(6);
-        LevelIncr(5);
+        LevelIncr(8);
     }
 
 
@@ -158,11 +156,23 @@ public class LevelUp : MonoBehaviour
                 weapon = CreateMelee(data);
                 break;
             case ItemData.ItemType.Range:
-                weapon = new GameObject().AddComponent<RangeWeapon>();
+                weapon = CreateRange(data);
                 break;
         }
         weapon.Init(data);
         return weapon;
+    }
+
+    Weapon CreateRange(ItemData data)
+    {
+        GameObject newWeapon = new GameObject();
+        switch (data.itemId)
+        {
+            case 8://샷건
+                return newWeapon.AddComponent<ShotGun>();
+            default:
+                return newWeapon.AddComponent<RangeWeapon>();
+        }
     }
 
     Weapon CreateMelee(ItemData data)
@@ -176,6 +186,8 @@ public class LevelUp : MonoBehaviour
                 return newWeapon.AddComponent<Sword>();
             case 7://창.
                 return newWeapon.AddComponent<Spear>();
+            case 9://불
+                return newWeapon.AddComponent<Bonfire>();
             default:
                 return null;
         }
