@@ -87,6 +87,8 @@ public class Enemy : MonoBehaviour
         speed = data.speed;
         maxHealth = data.health;
         health = data.health;
+        //보스 돌진패턴때문에 추가함
+        coll.isTrigger = false;
     }
 
     void OnTriggerEnter2D(Collider2D collision)

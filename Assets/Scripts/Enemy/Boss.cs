@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections;
-using System; // Added for Action types
+using System;
+using System.Collections.Generic; // Added for Action types
 
 public class Boss : MonoBehaviour
 {
@@ -12,11 +13,13 @@ public class Boss : MonoBehaviour
     float patternInterval = 4f;
 
     private Action[] coroutines;
+    private List<Action> usingPattern;
     Rigidbody2D rigid;
+    Collider2D col;
 
-    void Start()
+    void Awake()
     {
-
+        usingPattern = new List<Action>();
         // 원하는 코루틴들을 배열에 넣어줌
         coroutines = new Action[]
         {
@@ -24,7 +27,25 @@ public class Boss : MonoBehaviour
             () => StartCoroutine(PatternOfShot2()),
             () => StartCoroutine(PatternOfDash1())
         };
-        
+
+
+    }
+
+    public void PatternInit(int flagValue)
+    {
+        usingPattern.Clear();   
+        Debug.Log($"플래그: {flagValue}로 초기화");
+        for (int i = 0; i < 32; i++) // 최대 32비트 enum
+        {
+            if ((flagValue & (1 << i)) != 0)
+            {
+                if (i < coroutines.Length)
+                {
+                    Debug.Log($"패턴 추가: {i}번 패턴");
+                    usingPattern.Add(coroutines[i]);
+                }
+            }
+        }
     }
 
     void OnEnable()
@@ -44,6 +65,7 @@ public class Boss : MonoBehaviour
         //잠깐 멈추는 함수를 실행하기 위함
         enemy = GetComponent<Enemy>();
         rigid = GetComponent<Rigidbody2D>();
+        col = GetComponent<Collider2D>();
         //지 나온다고 공지 띄우기
         StartCoroutine(AnnounceAppear());
     }
@@ -57,12 +79,12 @@ public class Boss : MonoBehaviour
             patternTimer = 0f; // 타이머 초기화
 
             // 랜덤으로 하나 고름
-            int randIndex = UnityEngine.Random.Range(0, coroutines.Length);
+            int randIndex = UnityEngine.Random.Range(0, usingPattern.Count);
 
             // 선택한 코루틴 실행   
 
             Debug.Log("패턴 실행!" + randIndex.ToString());
-            coroutines[randIndex].Invoke();
+            usingPattern[randIndex].Invoke();
         }
     }
 
@@ -114,32 +136,50 @@ public class Boss : MonoBehaviour
     {
         Debug.Log("대쉬 함수");
         enemy.Stop();
-        float timer = 0f;
-        Vector2 dirVec = GameManager.instance.player.GetComponent<Rigidbody2D>().position - rigid.position;
+        int count = 4;
 
+        col.isTrigger = true;
 
-        //화살표 ui 띄우고 위치, 각도
-        arrowPrefab = GameManager.instance.pool.Get("Arrow");
-        
-        arrowPrefab.transform.position = this.transform.position;
-        arrowPrefab.transform.rotation = Quaternion.FromToRotation(Vector2.right, dirVec);
-        //돌진거리에 맞게 이미지 렌더러 사이즈 맞춰주기
-        SpriteRenderer arrowSR = arrowPrefab.GetComponentInChildren<SpriteRenderer>();
-        float dashDistance = dashSpeed * dashDuration;
-        float spriteWidth = arrowSR.sprite.bounds.size.x;
-        arrowPrefab.transform.localScale = new Vector3(dashDistance / spriteWidth/3, 1, 1);
-        arrowPrefab.SetActive(true);
-        //돌진 경고 이미지 띄워주기
-        yield return new WaitForSeconds(1f);
-        arrowPrefab.SetActive(false);
-        while (timer < dashDuration)
+        while (0 < --count)
         {
-            // FixedUpdate 대신 여기서 MovePosition으로 돌진
-            rigid.MovePosition(rigid.position + dirVec.normalized * dashSpeed * Time.fixedDeltaTime);
-            timer += Time.fixedDeltaTime;
-            yield return null;
+            float timer = 0f;
+            Vector2 dirVec = GameManager.instance.player.GetComponent<Rigidbody2D>().position - rigid.position;
+
+
+            //화살표 ui 띄우고 위치, 각도
+            arrowPrefab = GameManager.instance.pool.Get("Arrow");
+            arrowPrefab.transform.position = this.transform.position;
+            arrowPrefab.transform.rotation = Quaternion.FromToRotation(Vector2.right, dirVec);
+            //돌진거리에 맞게 이미지 렌더러 사이즈 맞춰주기
+            SpriteRenderer arrowSR = arrowPrefab.GetComponentInChildren<SpriteRenderer>();
+            float dashDistance = dashSpeed * dashDuration;
+            float spriteWidth = arrowSR.sprite.bounds.size.x;
+            arrowPrefab.transform.localScale = new Vector3(dashDistance / spriteWidth / 3, 1, 1);
+            arrowPrefab.SetActive(true);
+            //돌진 경고 이미지 띄워주기(1초간)
+            yield return new WaitForSeconds(1f);
+            arrowPrefab.SetActive(false);
+            while (timer < dashDuration)
+            {
+                // FixedUpdate 대신 여기서 MovePosition으로 돌진
+                rigid.MovePosition(rigid.position + dirVec.normalized * dashSpeed * Time.fixedDeltaTime);
+                timer += Time.fixedDeltaTime;
+                yield return null;
+            }
         }
+        //주의할거는 돌진하다가 뒤지면 콜라이더 계속 꺼져있는거니깐 스포너에서 활성화 잘 시켜주자
+        col.isTrigger = false;
         enemy.move();
+    }
+
+    //돌진 패턴용으로
+    void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (!collision.CompareTag("Player"))
+        {
+            return;
+        }
+        GameManager.instance.player.MinusHp(30);
     }
 
     //방향을 지정해주면 발사함
@@ -156,12 +196,12 @@ public class Boss : MonoBehaviour
         AudioManager.instance.PlaySfx(AudioManager.Sfx.Range);
     }
 
-    
-    
+
+
     IEnumerator AnnounceAppear()
     {
-         // 한 프레임 기다려야 원하는 이미지가 띄워짐..
-         yield return null;
+        // 한 프레임 기다려야 원하는 이미지가 띄워짐..
+        yield return null;
         String str = "무시무시한 보스가 등장합니다..";
         Sprite image = this.GetComponent<SpriteRenderer>().sprite;
         GameManager.instance.notice.enqueueNoitce(image, str);

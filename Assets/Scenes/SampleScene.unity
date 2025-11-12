@@ -398,7 +398,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gameTime: 0
-  maxGameTime: 300
+  maxGameTime: 180
   isLive: 0
   playerId: 0
   health: 0
@@ -4217,6 +4217,8 @@ MonoBehaviour:
   - {fileID: 1449124771407414762, guid: 856f1e0ba0d746b479f470d6c6000bd5, type: 3}
   - {fileID: 5101290782914224623, guid: f9aad6234cf5da14a829725dceb90313, type: 3}
   - {fileID: 5408670820067426375, guid: 1452fa946978bc4438449c92d7e1c68c, type: 3}
+  - {fileID: 3134167556232110052, guid: f5b8e430842cc6a42912b15e84d0ab89, type: 3}
+  - {fileID: 2934441911339916465, guid: 5b04240c41dd4c44fb70b17639bc8379, type: 3}
 --- !u!4 &695899487
 Transform:
   m_ObjectHideFlags: 0
@@ -5191,7 +5193,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &848928424
 RectTransform:
   m_ObjectHideFlags: 0
@@ -16391,14 +16393,14 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 44845850}
-        m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
-        m_MethodName: GameStart
-        m_Mode: 3
+      - m_Target: {fileID: 1908874402}
+        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+        m_MethodName: SetActive
+        m_Mode: 6
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: -1
+          m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
@@ -16415,14 +16417,14 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 1
         m_CallState: 2
-      - m_Target: {fileID: 1908874402}
-        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
-        m_MethodName: SetActive
-        m_Mode: 6
+      - m_Target: {fileID: 44845850}
+        m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
+        m_MethodName: GameStart
+        m_Mode: 3
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
+          m_IntArgument: -1
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
@@ -21475,26 +21477,38 @@ MonoBehaviour:
     spriteType: 0
     health: 10
     speed: 1.5
+    isBoss: 0
+    bossPattern: 0
   - spawnTime: 0.7
     spriteType: 1
     health: 15
     speed: 2.5
+    isBoss: 0
+    bossPattern: 0
   - spawnTime: 30
     spriteType: 1
     health: 300
     speed: 2.2
+    isBoss: 1
+    bossPattern: 6
   - spawnTime: 0.7
     spriteType: 3
     health: 50
     speed: 2.2
+    isBoss: 0
+    bossPattern: 0
   - spawnTime: 30
     spriteType: 3
     health: 300
     speed: 2.5
+    isBoss: 1
+    bossPattern: -1
   - spawnTime: 0.6
     spriteType: 2
     health: 200
     speed: 2.3
+    isBoss: 0
+    bossPattern: 0
   levelTime: 0
 --- !u!1 &1622733756
 GameObject:

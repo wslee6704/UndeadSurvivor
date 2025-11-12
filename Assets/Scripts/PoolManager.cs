@@ -59,6 +59,7 @@ public class PoolManager : MonoBehaviour
         return Get(index); // 기존 int 버전 호출
     }
 
+    //오브젝트가 갖고 있는 코드(T)의 함수action을 실행
     public void CallOnActive<T>(System.Action<T> action) where T : Component
     {
         for (int i = 0; i < prefabs.Length; i++)
@@ -80,4 +81,6 @@ public class PoolManager : MonoBehaviour
             }
         }
     }
+
+
 }
